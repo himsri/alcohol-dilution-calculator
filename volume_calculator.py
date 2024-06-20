@@ -1,10 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
-import base64
-from io import BytesIO
-from PIL import Image, UnidentifiedImageError
-import time
 import requests
+import time
 
 def final_volume(V_water, V_ethanol, T, k_0=0.05, T_0=25, alpha=0.0001):
     """
@@ -25,29 +22,13 @@ def final_volume(V_water, V_ethanol, T, k_0=0.05, T_0=25, alpha=0.0001):
     V_solution = V_water + V_ethanol - k * (V_water * V_ethanol) ** 0.5
     return V_solution
 
-def get_image_as_base64(url):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()  # Ensure the request was successful
-        img = Image.open(BytesIO(response.content))
-        buffered = BytesIO()
-        img.save(buffered, format="PNG")
-        return base64.b64encode(buffered.getvalue()).decode()
-    except UnidentifiedImageError:
-        st.error("The image could not be identified or is not in a supported format.")
-        return None
-    except requests.RequestException as e:
-        st.error(f"Error loading image: {e}")
-        return None
-
-background_image_url = "https://i.ibb.co/pyFqrBc/donuts-2.jpg"
-
-# Define your custom HTML for the background
+#https://www.notion.so/images/page-cover/gradients_8.png
 background_html = """
 <style>
 [data-testid="stAppViewContainer"] > .main {
-    background-image: url("https://thepaperwala.com/assets/img/Alcohol_Water.jpg");
-    background-size: 95% 90%;  # This sets the size to cover 100% of the viewport width and height
+    background-image: url("https://www.notion.so/images/page-cover/gradients_8.png");
+    #background-size: 95% 90%;  # This sets the size to cover 100% of the viewport width and height
+    background-size: cover;  # This sets the size to cover 100% of the viewport width and height
     # background-position: center;
     background-repeat: no-repeat;
 }
@@ -56,14 +37,7 @@ background_html = """
 
 st.markdown(background_html, unsafe_allow_html=True)
 
-# Streamlit application layout
-st.title(":blue[Alcohol Dilution Calculator.]")
-
-with st.sidebar:
-    st.header("Inputs")
-    V_water = st.text_input("Volume of Water (ml)", "250")
-    V_ethanol = st.text_input("Volume of Alcohol (ml)", "250")
-    T = st.slider("Room Temperature (°C)", min_value=-10, max_value=100, value=25)
+st.title(":blue[Alcohol Dilution Calculator]")
 
 problem_statement = """
 Do you need to accurately dilute alcohol for your mixtures? 
@@ -71,9 +45,14 @@ Do you need to accurately dilute alcohol for your mixtures?
 This website app simplifies the process! Enter the volume of water and alcohol (in milliliters) you want to mix, along with the room temperature (in degrees Celsius). We'll calculate the final solution volume, considering potential volume contraction when mixing water and alcohol.
 """
 
-white_text_html = f"""<span style='color: white;'>{problem_statement}</span>"""
+white_text_html = f"""<span style='color: black;'>{problem_statement}</span>"""
 
 st.write(white_text_html, unsafe_allow_html=True)
+
+st.header("Inputs")
+V_water = st.text_input("Volume of Water (ml)", "250")
+V_ethanol = st.text_input("Volume of Alcohol (ml)", "250")
+T = st.slider("Room Temperature (°C)", min_value=-10, max_value=100, value=25)
 
 # Calculate the final volume
 if V_water.isdigit() and V_ethanol.isdigit():
